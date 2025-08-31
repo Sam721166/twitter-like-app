@@ -1,3 +1,4 @@
+require("dotenv").config()
 const express = require("express")
 const app = express()
 const userModel = require("./model/user")
@@ -35,7 +36,7 @@ app.post("/create", (req, res) => {
             password: hash
 
             })
-            const token = jwt.sign({email: req.body.email, userid: user._id}, "secret")
+            const token = jwt.sign({email: req.body.email, userid: user._id}, process.env.JWT_SECRET)
             res.cookie("token", token)
             res.redirect("/login")
         })
@@ -56,7 +57,7 @@ app.post("/login", async (req, res) => {
 
     bcrypt.compare(req.body.password, user.password, (err, result) => {
         if(result) {
-            const token = jwt.sign({email: user.email, userid: user._id}, "secret")
+            const token = jwt.sign({email: user.email, userid: user._id}, process.env.JWT_SECRET)
             res.cookie("token", token)
             res.status(200).redirect("/profile") 
         }
@@ -86,7 +87,7 @@ app.get("/logout", (req, res) => {
 function isLoggedIn(req, res, next){    //middleware for protected routs
     if(req.cookies.token === "") res.send("You must be logged in")
     else{
-        const data = jwt.verify(req.cookies.token, "secret")
+        const data = jwt.verify(req.cookies.token, process.env.JWT_SECRET)
         req.user = data
     }
     next()
