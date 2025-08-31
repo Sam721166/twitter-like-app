@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-zinc-900 w-full h-full">
+    
+    <div class="text-white p-10">
+        <div class="flex justify-between mb-8" >
+            <div class="flex gap-3">
+                <div class="w=15 h-15">
+                    <img class="w-12 h-12 rounded-full object-cover overflow-hidden" 
+                        src="/images/uploads/<%= user.profilepic %>">
+                    <a class="text-xs ml-3.5 text-blue-500" href="/profile/upload">edit</a>
+                </div>
+                <h1 class="text-3xl">Hello, <%= user.username %> 👋</h1>
+            </div>
+            
+            <a class="bg-red-500 rounded-md h-9 px-4 py-1" href="/logout">Logout</a>
+        </div>
+        
+        <h3 class="text-sm mt-5">You can create a new post</h3>
+        <form action="/post" method="post">
+            <div>
+                <textarea class="bg-transparent p-3 outline-none block rounded-md border-2 border-zinc-700 mt-6 resize-none w-1/3" placeholder="What's on your mind?" name="content" required></textarea>
+                <input class="px-3 py-2 w-40 text-sm bg-blue-500 block rounded-md mt-2 tracking-tight" type="submit" value="Create new post">
+            </div>
+        </form>
+        <h3 class="text-zinc-500 mt-16 mb-2">Your posts.</h3>
+        <div class="flex flex-wrap flex-col gap-2 inline-block">
+            
+            <% if (user.post && user.post.length > 0) { %>
+                <% user.post.reverse().forEach(function(post) { %>
+                    <% const liked = (post.likes || []).some(function(like){ return like.toString() === user._id.toString() }) %>
+                    <div class="border-[1px] border-zinc-700 bg-zinc-800 inline-block w-80 rounded-md px-5 py-4 mb-2">
+                        <a class="text-blue-500" href="/profile">@<%= user.username %></a>
+                        <p class="text-xs text-zinc-400 mb-2"><%= new Date(post.date).toLocaleDateString() %></p>
+                        <h3 class="mb-5"><%= post.content %></h3>
+                        <h3 class="text-pink-500 text-sm inline-block mb-1"><%= post.likes.length %> Likes</h3>
+                        <div class="flex justify-between  mr-14">
+                            <a class="text-blue-500 " href="/like/<%= post._id %>"><%= post.likes.indexOf(user._id) === -1 ? "Like" : "Unlike" %></a>
+                            <a class="text-yellow-500" href="/edit/<%= post._id %>">Edit</a>
+                            <a class="text-red-500" href="/delete/<%= post._id %>">Delete</a>
+                            
+                        </div>
+                    </div>
+                <% }); %>
+            <% } else { %>
+                <p class="text-zinc-500">No posts yet. Create your first post above!</p>
+            <% } %>
+            
+        </div>
+
+    </div>
+</body>
+</html>
